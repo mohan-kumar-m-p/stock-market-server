@@ -1,0 +1,29 @@
+{
+    "eslint.workingDirectories": [
+        "./application"
+      ],
+      "eslint.validate": [
+        { "language": "javascript", "autoFix": true }
+    ],
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true,
+        "node": true, //space will reduce
+        "es6": true
+    },
+    "extends": "airbnb-base",
+    "overrides": [],
+    "parserOptions": {
+        "ecmaVersion": 12
+    },
+    "rules": {
+        "no-restricted-syntax": [
+            "error",
+            {
+                "selector": "ObjectExpression > SpreadElement",
+                "message": "Spread operator is allowed."
+            }
+        ]
+    }
+}
