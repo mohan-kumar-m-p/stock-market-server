@@ -4,7 +4,7 @@ const create = require("./create");
 const createStockCompanyCtrl = (stockCompanyModel) => {
   const stockCompanyCtrl = {};
 
-  stockCompanyCtrl.create = (req, res) => create(stockCompanyModel, req, res);
+  stockCompanyCtrl.create = (req, res) => create(req, res, stockCompanyModel);
 
   return stockCompanyCtrl;
 };
