@@ -1,5 +1,5 @@
 class CRUD {
-  static async save(model, data) {
+  static async save (model, data) {
     return model
       .create(data)
       .then((result) => {
@@ -10,7 +10,7 @@ class CRUD {
       });
   }
 
-  static async create(model, data) {
+  static async create (model, data) {
     return model
       .create(data)
       .then((result) => {
@@ -21,7 +21,7 @@ class CRUD {
       });
   }
 
-  static async aggregate(model, query) {
+  static async aggregate (model, query) {
     return model
       .aggregate(query)
       .exec()
@@ -33,7 +33,7 @@ class CRUD {
       });
   }
 
-  static async findAll(model, querry) {
+  static async findAll (model, querry) {
     return model
       .find(querry)
       .exec()
@@ -45,12 +45,16 @@ class CRUD {
       });
   }
 
-  static async find(model, querry) {
+  static async find (model, querry) {
     const offset = querry?.offset || 0;
     const limit = querry?.pageSize || 10;
     const filter = querry?.filter || {};
+    const select = querry?.select || {};
+    const sort = querry?.sort || {};
     return model
       .find(filter)
+      .select(select)
+      .sort(sort)
       .skip(offset)
       .limit(limit)
       .exec()
@@ -62,7 +66,7 @@ class CRUD {
       });
   }
 
-  static async updateOne(model, query, updateData) {
+  static async updateOne (model, query, updateData) {
     return model
       .updateOne(query, updateData)
       .exec()
@@ -70,24 +74,24 @@ class CRUD {
         throw result;
       })
       .catch((err) => {
-        console.log("err --  ", err);
+        console.log('err --  ', err);
         throw err;
       });
   }
 
-  static async findOneAndUpdate(model, query, updateData, options = {}) {
+  static async findOneAndUpdate (model, query, updateData, options = {}) {
     return model
       .findOneAndUpdate(query, updateData, options)
       .then((result) => {
         return result;
       })
       .catch((err) => {
-        console.log("err --  ", err);
+        console.log('err --  ', err);
         throw err;
       });
   }
 
-  static async findOne(model, query) {
+  static async findOne (model, query) {
     return model
       .findOne(query)
       .exec()
@@ -99,7 +103,7 @@ class CRUD {
       });
   }
 
-  static async count(model, query) {
+  static async count (model, query) {
     return model
       .find(query)
       .exec()
@@ -112,7 +116,7 @@ class CRUD {
       });
   }
 
-  static async distinct(model, uniqueKey, query) {
+  static async distinct (model, uniqueKey, query) {
     return model
       .distinct(uniqueKey, query)
       .exec()

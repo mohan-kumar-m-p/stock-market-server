@@ -1,5 +1,5 @@
-const md5 = require("md5");
-const mongoose = require("mongoose");
+const md5 = require('md5');
+const mongoose = require('mongoose');
 
 const definition = {
   //=== === === stock historical details starts here ======
@@ -13,23 +13,24 @@ const definition = {
   //=== === === general fields starts here ================
   id: { type:String, unique:true },
   companyId:{ type:String, required:true },
+  Symbol: { type: String, required: true },
   isActive: { type: Boolean, default: true },
-  uniqueHashRef: { type:String }, 
+  uniqueHashRef: { type:String },
   uniqueHash: { type:String, unique:true }, // combination of todays date and company id.
   createdBy:{ type:String, required:true },
-  modifiedBy:{ type:String },
+  modifiedBy:{ type:String }
   //=== === === general fields ends here ==================
 };
 
 const historicalSchema = mongoose.Schema(definition, { timestamps: true });
 
-historicalSchema.pre("save", function () {
+historicalSchema.pre('save', function () {
   this.id = this._id;
   this.uniqueHashRef = new Date(this.date).toDateString() + this.companyId;
   // to maintain unique records of the historical stock data for a day.
   this.uniqueHash = md5(this.uniqueHashRef);
 });
 
-const historicalDataModel = mongoose.model("stockhistoricaldata", historicalSchema);
+const historicalDataModel = mongoose.model('stockhistoricaldata', historicalSchema);
 
 module.exports = { historicalDataModel };

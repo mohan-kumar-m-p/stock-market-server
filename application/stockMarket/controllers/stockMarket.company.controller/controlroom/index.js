@@ -1,4 +1,4 @@
-const create = require("./create");
+const create = require('./create');
 
 //Gathering stock market company controllers
 const createStockCompanyCtrl = (stockCompanyModel) => {

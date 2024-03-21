@@ -1,33 +1,74 @@
-const crypto = require("crypto");
-const {
-  differenceInCalendarDays,
-  eachDayOfInterval,
-  format,
-  subDays,
-  isEqual,
-} = require("date-fns");
+const request = require('request');
 
-//to generate unique id
-exports.generateUniqueID = (length = 10) => {
-  return crypto.randomBytes(length).toString("hex");
-};
+const apiKey = process.env.ALPHA_KEY;
 
-//to calculate total nights of customer stay
-exports.calculateNights = (startDate, endDate) => {
-  return differenceInCalendarDays(new Date(endDate), new Date(startDate));
-};
+function getSearchAlphavantage (symbol) {
+  return new Promise((resolve, reject) => {
 
-exports.getDateArrayInRange = (startDate, endDate) => {
-  const start = new Date(startDate);
-  // Subtract one day from the end date as we not consider checkout day
-  const end = new Date(endDate);
-  // Check if start and end dates are the same
-  if (isEqual(start, end)) {
-    return [format(start, "yyyy-MM-dd")];
-  }
-  const endBitOne = subDays(new Date(endDate), 1);
+    const url = `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${apiKey}`;
 
-  const dateRange = eachDayOfInterval({ start, endBitOne });
+    request.get({
+      url: url,
+      json: true,
+      headers: { 'User-Agent': 'request' }
+    }, (err, res, data) => {
+      if (err) {
+        reject(new Error(err.message));
+      } else if (res.statusCode !== 200) {
+        resolve({ Status: res.statusCode });
+      } else {
 
-  return dateRange.map((date) => format(date, "yyyy-MM-dd"));
-};
+        const allowedKeys = [
+          'Symbol',
+          'AssetType',
+          'Name',
+          'Description',
+          'CIK',
+          'Exchange',
+          'Currency',
+          'Country',
+          'Sector',
+          'Industry',
+          'Address',
+          'FiscalYearEnd',
+          'LatestQuarter',
+          'MarketCapitalization',
+          'EBITDA',
+          'PERatio',
+          'PEGRatio',
+          'BookValue',
+          'DividendPerShare',
+          'DividendYield',
+          'ProfitMargin',
+          'QuarterlyEarningsGrowthYOY',
+          'QuarterlyRevenueGrowthYOY',
+          'AnalystTargetPrice',
+          'AnalystRatingStrongBuy',
+          'AnalystRatingBuy',
+          'AnalystRatingHold',
+          'AnalystRatingSell',
+          'AnalystRatingStrongSell',
+          '52WeekHigh',
+          '52WeekLow',
+          '50DayMovingAverage',
+          '200DayMovingAverage',
+          'SharesOutstanding',
+          'DividendDate',
+          'ExDividendDate'
+        ];
+
+        const filteredData = Object.keys(data)
+          .filter(key => allowedKeys.includes(key))
+          .reduce((obj, key) => {
+            obj[key] = data[key];
+            return obj;
+          }, {});
+
+        resolve(filteredData);
+      }
+    });
+
+  });
+}
+
+module.exports = { getSearchAlphavantage };
