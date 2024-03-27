@@ -16,7 +16,7 @@ const definition = {
   Symbol: { type: String, required: true },
   isActive: { type: Boolean, default: true },
   uniqueHashRef: { type:String },
-  uniqueHash: { type:String, unique:true }, // combination of todays date and company id.
+  uniqueHash: { type:String, unique:true }, // combination of date-time and company id.
   createdBy:{ type:String, required:true },
   modifiedBy:{ type:String }
   //=== === === general fields ends here ==================
@@ -34,3 +34,30 @@ historicalSchema.pre('save', function () {
 const historicalDataModel = mongoose.model('stockhistoricaldata', historicalSchema);
 
 module.exports = { historicalDataModel };
+
+// {
+//   "Meta Data": {
+//       "1. Information": "Intraday (5min) open, high, low, close prices and volume",
+//       "2. Symbol": "IBM",
+//       "3. Last Refreshed": "2024-03-26 19:55:00",
+//       "4. Interval": "5min",
+//       "5. Output Size": "Compact",
+//       "6. Time Zone": "US/Eastern"
+//   },
+//   "Time Series (5min)": {
+//       "2024-03-26 19:55:00": {
+//           "1. open": "188.7100",
+//           "2. high": "188.7100",
+//           "3. low": "188.6200",
+//           "4. close": "188.6200",
+//           "5. volume": "29"
+//       },
+//       "2024-03-26 19:45:00": {
+//           "1. open": "188.6000",
+//           "2. high": "188.6000",
+//           "3. low": "188.6000",
+//           "4. close": "188.6000",
+//           "5. volume": "1"
+//       },
+//     }
+//   }

@@ -15,7 +15,7 @@ function getSearchAlphavantage (symbol) {
       if (err) {
         reject(new Error(err.message));
       } else if (res.statusCode !== 200) {
-        resolve({ Status: res.statusCode });
+        resolve({ status: res.statusCode });
       } else {
 
         const allowedKeys = [
@@ -60,11 +60,24 @@ function getSearchAlphavantage (symbol) {
         const filteredData = Object.keys(data)
           .filter(key => allowedKeys.includes(key))
           .reduce((obj, key) => {
-            obj[key] = data[key];
+            if (key == '52WeekHigh') {
+              obj['s52WeekHigh'] = data[key];
+            } else if (key == '52WeekLow') {
+              obj['s52WeekLow'] = data[key];
+            } else if (key == '50DayMovingAverage') {
+              obj['s50DayMovingAverage'] = data[key];
+            } else if (key == '200DayMovingAverage') {
+              obj['s200DayMovingAverage'] = data[key];
+              return;
+            } else {
+              const sKey = key?.charAt(0).toString().toLowerCase() + key?.substring(1);
+              obj[sKey] = data[key];
+            }
+
             return obj;
           }, {});
 
-        resolve(filteredData);
+        resolve({ data: filteredData, status : 200 });
       }
     });
 

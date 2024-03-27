@@ -1,4 +1,5 @@
 class CRUD {
+
   static async save (model, data) {
     return model
       .create(data)
@@ -33,9 +34,9 @@ class CRUD {
       });
   }
 
-  static async findAll (model, querry) {
+  static async findAll (model, query) {
     return model
-      .find(querry)
+      .find(query)
       .exec()
       .then((result) => {
         return result;
@@ -45,12 +46,12 @@ class CRUD {
       });
   }
 
-  static async find (model, querry) {
-    const offset = querry?.offset || 0;
-    const limit = querry?.pageSize || 10;
-    const filter = querry?.filter || {};
-    const select = querry?.select || {};
-    const sort = querry?.sort || {};
+  static async find (model, query) {
+    const offset = query?.offset || 0;
+    const limit = query?.pageSize || 10;
+    const filter = query?.filter || {};
+    const select = query?.select || {};
+    const sort = query?.sort || {};
     return model
       .find(filter)
       .select(select)
@@ -71,7 +72,7 @@ class CRUD {
       .updateOne(query, updateData)
       .exec()
       .then((result) => {
-        throw result;
+        return result;
       })
       .catch((err) => {
         console.log('err --  ', err);
@@ -92,9 +93,12 @@ class CRUD {
   }
 
   static async findOne (model, query) {
+    const filter = query?.filter || {};
+    const select = query?.select || {};
     return model
-      .findOne(query)
-      .exec()
+      .findOne(filter)
+      .select(select)
+      .lean()
       .then((result) => {
         return result;
       })
@@ -104,8 +108,9 @@ class CRUD {
   }
 
   static async count (model, query) {
+    const filter = query?.filter || {};
     return model
-      .find(query)
+      .find(filter)
       .exec()
       .count()
       .then((result) => {
