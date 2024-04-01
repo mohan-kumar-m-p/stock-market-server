@@ -1,5 +1,5 @@
 
-const commonFunction = require('../../../../../helpers/systemFunctions');
+const { prepareFilter, prepareSort, prepareSelect } = require('../../../../../helpers/systemFunctions/commonFunctions');
 const { CRUD } = require('../../../models/crud.model');
 
 const list = async (req, res, stockCompanyModel) => {
@@ -18,11 +18,11 @@ const list = async (req, res, stockCompanyModel) => {
   }
 
   // preparing filter object
-  let filter = commonFunction.prepareFilter(query);
+  let filter = prepareFilter(query);
   // preparing sort objects
-  const sort = commonFunction.prepareSort(query);
+  const sort = prepareSort(query);
   // preparing select objects to get only selected feilds data
-  const select = commonFunction.prepareSelect(query);
+  const select = prepareSelect(query);
 
   // fetch the stock market companies list.
   const result = await CRUD.find(stockCompanyModel, { filter, select, sort, offset, limit });

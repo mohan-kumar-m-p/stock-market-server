@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const definition = {
   //=== === === stock company details starts here ===============================
-  symbol: { type: String, required: true },
+  symbol: { type: String, required: true, unique:true },
   assetType: { type: String, required: true },
   name: { type: String, required: true },
   description: { type: String, required: true },
@@ -11,7 +11,7 @@ const definition = {
   exchange: { type: String, required: true },
   currency: { type: String, required: true },
   country: { type: String, required: true },
-  Sector: { type: String, required: true },
+  sector: { type: String, required: true },
   industry: { type: String, required: true },
   address: { type: String, required: true },
   fiscalYearEnd: { type: String, required: true },
@@ -58,7 +58,7 @@ const companySchema = mongoose.Schema(definition, { timestamp: true });
 // to generate unique reference code.
 async function genRefCode (next) {
   this.id = this._id;
-  this.uniqueHashRef = this.companyName;
+  this.uniqueHashRef = this.name;
   this.uniqueHash = md5(this.uniqueHashRef);
   // fetching the details of the last document created.
   const prevObject = await this.findOne({}).sort({ createdAt: -1 }).limit(1);
