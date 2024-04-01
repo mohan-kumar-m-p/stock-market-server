@@ -35,29 +35,64 @@ const historicalDataModel = mongoose.model('stockhistoricaldata', historicalSche
 
 module.exports = { historicalDataModel };
 
-// {
-//   "Meta Data": {
-//       "1. Information": "Intraday (5min) open, high, low, close prices and volume",
-//       "2. Symbol": "IBM",
-//       "3. Last Refreshed": "2024-03-26 19:55:00",
-//       "4. Interval": "5min",
-//       "5. Output Size": "Compact",
-//       "6. Time Zone": "US/Eastern"
-//   },
-//   "Time Series (5min)": {
-//       "2024-03-26 19:55:00": {
-//           "1. open": "188.7100",
-//           "2. high": "188.7100",
-//           "3. low": "188.6200",
-//           "4. close": "188.6200",
-//           "5. volume": "29"
-//       },
-//       "2024-03-26 19:45:00": {
-//           "1. open": "188.6000",
-//           "2. high": "188.6000",
-//           "3. low": "188.6000",
-//           "4. close": "188.6000",
-//           "5. volume": "1"
-//       },
+// // Usage example
+// const fromTimestamp = new Date("2024-03-28T12:00:00Z");
+// const toTimestamp = new Date("2024-03-28T12:20:00Z");
+// getStocksAtExactIntervals("AAPL", fromTimestamp, toTimestamp, 5); // Fetching stocks at 5-minute intervals
+// const mongoose = require('mongoose');
+// const StockData = require('./models/StockData'); // Assume this is your model
+
+// // Function to fetch data
+// async function fetchStockData(symbol, referenceTimestamp, interval) {
+//   const referenceDate = new Date(referenceTimestamp);
+//   const referenceMinutes = referenceDate.getHours() * 60 + referenceDate.getMinutes();
+
+//   const pipeline = [
+//     {
+//       $match: {
+//         symbol: symbol,
+//         timestamp: { $gte: referenceDate }
+//       }
+//     },
+//     {
+//       $addFields: {
+//         minutesDiff: {
+//           $floor: {
+//             $divide: [
+//               { $subtract: ['$timestamp', referenceDate] },
+//               1000 * 60
+//             ]
+//           }
+//         }
+//       }
+//     },
+//     {
+//       $addFields: {
+//         intervalGroup: {
+//           $floor: {
+//             $divide: ['$minutesDiff', interval]
+//           }
+//         }
+//       }
+//     },
+//     {
+//       $group: {
+//         _id: '$intervalGroup',
+//         averagePrice: { $avg: '$price' },
+//         totalVolume: { $sum: '$volume' },
+//         documents: { $push: '$$ROOT' } // Optional: Collects all documents in each group
+//       }
+//     },
+//     {
+//       $sort: { _id: 1 }
 //     }
-//   }
+//   ];
+
+//   const result = await StockData.aggregate(pipeline);
+//   return result;
+// }
+
+// // Usage example
+// fetchStockData('AAPL', '2024-03-28T12:00:00Z', 5)
+//   .then(result => console.log(result))
+//   .catch(err => console.error(err));
