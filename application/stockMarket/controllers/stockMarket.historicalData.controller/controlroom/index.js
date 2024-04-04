@@ -2,15 +2,15 @@ const create = require('./create');
 const getOne = require('./getOne');
 const list = require('./list');
 
-//Gathering stock market company controllers
-const createStockCompanyCtrl = (stockCompanyModel) => {
-  const stockCompanyCtrl = {};
+//Gathering stock market OHLCV controllers
+const createStockOHLCVCtrl = (historicalDataModel, stockCompanyModel) => {
+  const stockOHLCVCtrl = {};
 
-  stockCompanyCtrl.create = (req, res) => create(req, res, stockCompanyModel);
-  stockCompanyCtrl.list = (req, res) => list(req, res, stockCompanyModel);
-  stockCompanyCtrl.getOne = (req, res) => getOne(req, res, stockCompanyModel);
+  stockOHLCVCtrl.create = (req, res) => create(req, res, historicalDataModel, stockCompanyModel);
+  stockOHLCVCtrl.list = (req, res) => list(req, res, historicalDataModel, stockCompanyModel);
+  stockOHLCVCtrl.getOne = (req, res) => getOne(req, res, historicalDataModel, stockCompanyModel);
 
-  return stockCompanyCtrl;
+  return stockOHLCVCtrl;
 };
 
-module.exports = createStockCompanyCtrl;
+module.exports = createStockOHLCVCtrl;

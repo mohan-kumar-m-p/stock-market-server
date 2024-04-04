@@ -39,7 +39,7 @@ const definition = {
   sharesOutstanding: { type: String, required: true },
   dividendDate: { type: String, required: true },
   exDividendDate: { type: String, required: true },
-  lastRefreshed: { type: Date },
+  lastRefreshed: { type: Date, default: new Date('2024-03-30T11:00:00Z') },
   //=== === === stock company details ends here =================================
   //=== === === general fields starts here ======================================
   id: { type: String, unique: true },
@@ -61,7 +61,7 @@ async function genRefCode (next) {
   this.uniqueHashRef = this.name;
   this.uniqueHash = md5(this.uniqueHashRef);
   // fetching the details of the last document created.
-  const prevObject = await this.findOne({}).sort({ createdAt: -1 }).limit(1);
+  const prevObject = await this.constructor.findOne().sort({ createdAt: -1 });
   let refCode = '';
   if (prevObject && prevObject.refCode) {
     // stroring previous document refcode
@@ -71,7 +71,7 @@ async function genRefCode (next) {
     // by converting refcode to number and adding one
     refCode = `SMC${Number(numberStr) + 1}`;
   } else {
-    // if it is first document the previous document will not be there so we store directly
+  // if it is first document the previous document will not be there so we store directly
     refCode = 'SMC' + 100000;
   }
   // assigning refCode value

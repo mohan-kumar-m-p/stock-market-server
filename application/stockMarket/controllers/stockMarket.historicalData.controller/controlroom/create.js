@@ -1,39 +1,42 @@
-const { getSearchAlphavantage } = require('../../../middlewares/common.functions');
+const { getSearchAlphavantage, getOHLCVAlphavantage } = require('../../../middlewares/common.functions');
 const { CRUD } = require('../../../models/crud.model');
 
-const create = async (req, res, stockCompanyModel) => {
-  const userId = req.user.id ?? 'System';
-  const data = req.body;
+const create = async (req, res, historicalDataModel, stockCompanyModel) => {
+  const userId = req?.user?.id ?? 'System';
 
-  //before creating stock market company check whether the company name already exists.
-  const exists = await CRUD.find(stockCompanyModel,
-    { filter: { $or: [{ symbol: data.symbol }, { companyName: data.companyName }] } });
+  const { symbol, companyId } = req.body;
 
-  //to avoid duplicate company name
-  if (exists?.length >= 0) {
+  //before creating OHLCV data of the company check whether the company symbol exists.
+  const exists = await CRUD.find(stockCompanyModel, { filter: { symbol: symbol } });
+
+  //if symbol does not exits then can't get the OHLCV data company name
+  if (exists?.length <= 0) {
     return res.status(401).json({
       success: false,
-      message: 'Company name or code already exists.'
+      message: 'Company symbol not found'
+    });
+  }
+  // get the OHLCV data from free API.
+  const ohlcvData = await getOHLCVAlphavantage(symbol, companyId);
+
+  if (!ohlcvData || !ohlcvData?.data || Object.keys(ohlcvData?.data)?.length <= 0 || ohlcvData?.status === 401) {
+    return res.status(401).json({
+      success: false,
+      message: 'OHLCV data is upto date.'
     });
   }
 
-  const overview = await getSearchAlphavantage (data.symbol);
-
-  if (overview?.status !== 200 || overview?.data?.length <= 0) {
-    return res.status(401).json({
-      success: false,
-      message: 'Sorry, company name or symbol data not found.'
-    });
-  }
-
-  overview.createdBy = userId;
-  //Create the stock market company document
-  const result = await CRUD.create(stockCompanyModel, overview);
+  const resBody = Object.assign({}, ohlcvData?.data);
+  resBody.createdBy = userId;
+  console.log('ohlcvData --', ohlcvData);
+  console.log('resBody --', resBody);
+  //Create the stock market OHLCV document
+  const result = await CRUD.insertMany(historicalDataModel, resBody);
 
   res.status(200).send({
     success: true,
     result: { data: result },
-    message: 'Stock market company created successfully'
+    message: 'Stock market OHLCV data created successfully'
   });
 
   return;

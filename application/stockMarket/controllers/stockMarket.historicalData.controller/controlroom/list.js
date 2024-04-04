@@ -2,7 +2,7 @@
 const commonFunction = require('../../../../../helpers/systemFunctions');
 const { CRUD } = require('../../../models/crud.model');
 
-const list = async (req, res, stockCompanyModel) => {
+const list = async (req, res, historicalDataModel, stockCompanyModel) => {
 
   const { query } = req;
 
