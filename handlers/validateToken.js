@@ -1,18 +1,18 @@
-const jwt = require("jsonwebtoken");
-const { userModel } = require("../models/helpers/user.crud.definition");
+const jwt = require('jsonwebtoken');
+const { userModel } = require('../models/helpers/user.crud.definition');
 
 //It is to validate the token, whether the users contain valid token or not
 const isValidAuthToken = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization.split(" ");
+    const authHeader = req.headers.authorization.split(' ');
     const token = authHeader[1];
 
-    if (!token || authHeader[0] !== "BookingRoom")
+    if (!token || authHeader[0] !== 'BookingRoom')
       return res.status(401).json({
         success: false,
         result: null,
-        message: "No authentication token, authorization denied.",
-        jwtExpired: true,
+        message: 'No authentication token, authorization denied.',
+        jwtExpired: true
       });
 
     const verified = jwt.verify(token, process.env.JWT_SECRET);
@@ -20,21 +20,21 @@ const isValidAuthToken = async (req, res, next) => {
       return res.status(401).json({
         success: false,
         result: null,
-        message: "Token verification failed, authorization denied.",
-        jwtExpired: true,
+        message: 'Token verification failed, authorization denied.',
+        jwtExpired: true
       });
 
     const user = await userModel.findOne({
       _id: verified.id,
-      isDeleted: false,
+      isDeleted: false
     });
 
     if (!user)
       return res.status(401).json({
         success: false,
         result: null,
-        message: "User doens't Exist, authorization denied.",
-        jwtExpired: true,
+        message: 'User doens\'t Exist, authorization denied.',
+        jwtExpired: true
       });
 
     const userToken = user.token;
@@ -43,8 +43,8 @@ const isValidAuthToken = async (req, res, next) => {
       return res.status(401).json({
         success: false,
         result: null,
-        message: "User is already logout try to login, authorization denied.",
-        jwtExpired: true,
+        message: 'User is already logout try to login, authorization denied.',
+        jwtExpired: true
       });
     else {
       const reqUserName = user?.name?.toLowerCase();
@@ -58,7 +58,7 @@ const isValidAuthToken = async (req, res, next) => {
       result: null,
       message: error.message,
       error: error,
-      controller: "isValidAuthToken",
+      controller: 'isValidAuthToken'
     });
   }
 };

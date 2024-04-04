@@ -1,8 +1,8 @@
 
-const commonFunction = require('../../../../../helpers/systemFunctions');
+const { prepareFilter, prepareSort, prepareSelect } = require('../../../../../helpers/systemFunctions/commonFunctions');
 const { CRUD } = require('../../../models/crud.model');
 
-const list = async (req, res, historicalDataModel, stockCompanyModel) => {
+const list = async (req, res, historicalDataModel) => {
 
   const { query } = req;
 
@@ -18,19 +18,35 @@ const list = async (req, res, historicalDataModel, stockCompanyModel) => {
   }
 
   // preparing filter object
-  let filter = commonFunction.prepareFilter(query);
+  let filter = prepareFilter(query);
   // preparing sort objects
-  const sort = commonFunction.prepareSort(query);
+  const sort = prepareSort(query);
   // preparing select objects to get only selected feilds data
-  const select = commonFunction.prepareSelect(query);
+  const select = prepareSelect(query);
+  let result = [];
 
-  // fetch the stock market companies list.
-  const result = await CRUD.find(stockCompanyModel, { filter, select, sort, offset, limit });
+  // fetch the stock market OHLCV list.
+  if (filter?.interval && filter?.interval >= 5 && filter?.symbol){
+    const documentsToSkip = (filter?.interval / 5) - 1;
+    let skipCount = 0;
+    const collectedDocuments = [];
+
+    while (collectedDocuments.length < limit) {
+      const document = await CRUD.find(historicalDataModel, { filter:{ symbol:filter?.symbol }, select, sort, offset:skipCount, limit });
+      if (!document) break;
+      collectedDocuments.push(document[0]);
+      skipCount += documentsToSkip + 1;
+    }
+
+    result = collectedDocuments;
+  } else {
+    result = await CRUD.find(historicalDataModel, { filter, select, sort, offset, limit });
+  }
 
   return res.status(200).send({
     success: true,
     result: { data: result },
-    message: 'Stock market companies list fetched successfully'
+    message: 'Stock market OHLCV list fetched successfully'
   });
 };
 

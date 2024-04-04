@@ -13,12 +13,12 @@ app.use(cookieParser());
 
 // const authRouter = require('./routers/auth.routers');
 // const userRouter = require('./routers/user.routers');
-const companyRouter = require('./application/stockMarket/routers/stockMarket.routers');
+const stockMarketRouter = require('./application/stockMarket/routers/stockMarket.routers');
 
 // sets application API's routes starts here
 // app.use('/api/v1/auth', authRouter);
 // app.use('/api/v1', isValidAuthToken, userRouter);
-app.use('/api/v1', companyRouter);
+app.use('/api/v1', stockMarketRouter);
 // routes end here
 
 module.exports = app;

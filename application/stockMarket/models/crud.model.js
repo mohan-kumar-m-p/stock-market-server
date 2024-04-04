@@ -22,6 +22,17 @@ class CRUD {
       });
   }
 
+  static async insertMany (model, data) {
+    return model
+      .insertMany(data)
+      .then((result) => {
+        return result;
+      })
+      .catch((err) => {
+        throw { message: err.message };
+      });
+  }
+
   static async aggregate (model, query) {
     return model
       .aggregate(query)
@@ -75,7 +86,6 @@ class CRUD {
         return result;
       })
       .catch((err) => {
-        console.log('err --  ', err);
         throw err;
       });
   }
@@ -87,7 +97,6 @@ class CRUD {
         return result;
       })
       .catch((err) => {
-        console.log('err --  ', err);
         throw err;
       });
   }
@@ -132,6 +141,7 @@ class CRUD {
         throw err;
       });
   }
+
 }
 
 module.exports = { CRUD };

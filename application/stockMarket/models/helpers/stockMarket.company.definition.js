@@ -39,7 +39,7 @@ const definition = {
   sharesOutstanding: { type: String, required: true },
   dividendDate: { type: String, required: true },
   exDividendDate: { type: String, required: true },
-  lastRefreshed: { type: Date, default: new Date('2024-03-30T11:00:00Z') },
+  lastRefreshed: { type: String, default:'2023-03' },
   //=== === === stock company details ends here =================================
   //=== === === general fields starts here ======================================
   id: { type: String, unique: true },

@@ -18,7 +18,7 @@ const create = async (req, res, stockCompanyModel) => {
 
   const overview = await getSearchAlphavantage(data?.symbol);
 
-  if (!overview || !overview?.data || Object.keys(overview?.data)?.length <= 0 || overview?.status === 401) {
+  if (overview?.status === 401 || !overview || !overview?.data || Object.keys(overview?.data)?.length <= 0 ) {
     return res.status(401).json({
       success: false,
       message: 'Sorry, company name or symbol data not found.'
@@ -27,8 +27,7 @@ const create = async (req, res, stockCompanyModel) => {
 
   const resBody = Object.assign({}, overview?.data);
   resBody.createdBy = userId;
-  console.log('overview --', overview);
-  console.log('resBody --', resBody);
+
   //Create the stock market company document
   const result = await CRUD.create(stockCompanyModel, resBody);
 

@@ -4,7 +4,7 @@ const apiKey = process.env.ALPHA_KEY;
 function getSearchAlphavantage (symbol) {
   return new Promise((resolve, reject) => {
 
-    const url = `https://wwww.aalphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${apiKey}`;
+    const url = `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${apiKey}`;
     const options = {
       method:'GET',
       headers:{
@@ -15,7 +15,6 @@ function getSearchAlphavantage (symbol) {
       .then((res)=> res.json())
       .then((res)=>{
         const data = Object.assign({}, res);
-        console.log('data -- ', data);
         if ( !data || Object.keys(data)?.length <= 0 ) {
           resolve({ data: {}, status: 401 });
         } else {
@@ -76,7 +75,6 @@ function getSearchAlphavantage (symbol) {
 
               return obj;
             }, {});
-          console.log('filteredData -- ', filteredData);
           resolve({ data: filteredData || {}, status : 200 });
         }
       }).catch((err) => {
@@ -86,10 +84,10 @@ function getSearchAlphavantage (symbol) {
   });
 }
 
-function getOHLCVAlphavantage (symbol, companyId) {
+function getOHLCVAlphavantage (symbol, month, companyId, userId) {
   return new Promise((resolve, reject) => {
 
-    const url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&apikey=${apiKey}`;
+    const url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&month=${month}&apikey=${apiKey}`;
 
     const options = {
       method:'GET',
@@ -101,7 +99,6 @@ function getOHLCVAlphavantage (symbol, companyId) {
       .then((res)=> res.json())
       .then((res)=>{
         const data = Object.assign({}, res);
-        console.log('data -- ', data);
         if ( !data || Object.keys(data)?.length <= 0 ) {
           resolve({ data: {}, status: 401 });
         } else {
@@ -120,12 +117,11 @@ function getOHLCVAlphavantage (symbol, companyId) {
             close: parseFloat(close),
             volume: parseInt(volume, 10),
             companyId: companyId,
-            Symbol: metaData['2. Symbol'],
-            createdBy:'EXMPLEID4343434'
+            symbol: metaData['2. Symbol'],
+            createdBy: userId
           }));
 
-          console.log('filteredData -- ', filteredData);
-          resolve({ data: filteredData || {}, status : 200 });
+          resolve({ data: filteredData || {}, status : 200, lastRefreshed:metaData['3. Last Refreshed'] });
         }
       }).catch((err) => {
         resolve({ data: {}, status: 401 });

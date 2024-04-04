@@ -1,13 +1,13 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const Joi = require("joi");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const Joi = require('joi');
 //const sendMail = require('./sendMail');
-const { CRUD } = require("../../../models/crud.model");
+const { CRUD } = require('../../../models/crud.model');
 
 // Custom validator for phone numbers
-function isValidPhoneNumber(value, helpers) {
+function isValidPhoneNumber (value, helpers) {
   if (!/^\d{10}$/.test(value)) {
-    return helpers.error("any.invalid");
+    return helpers.error('any.invalid');
   }
   return value;
 }
@@ -16,8 +16,8 @@ function isValidPhoneNumber(value, helpers) {
 const objectSchema = Joi.object({
   phone: Joi.string()
     .required()
-    .custom(isValidPhoneNumber, "custom phone validation"),
-  password: Joi.string().required(),
+    .custom(isValidPhoneNumber, 'custom phone validation'),
+  password: Joi.string().required()
 });
 
 const login = async (userModel, req, res) => {
@@ -30,21 +30,21 @@ const login = async (userModel, req, res) => {
       success: false,
       result: null,
       error: error,
-      message: "Invalid/Missing credentials.",
-      errorMessage: error.message,
+      message: 'Invalid/Missing credentials.',
+      errorMessage: error.message
     });
   }
 
   const user = await CRUD.findOne(userModel, {
     phone: phone,
-    isDeleted: false,
+    isDeleted: false
   });
 
   if (!user)
     return res.status(404).json({
       success: false,
       result: null,
-      message: "No account with this phone number has been registered.",
+      message: 'No account with this phone number has been registered.'
     });
 
   const isMatch = await bcrypt.compare(password, user.password);
@@ -53,7 +53,7 @@ const login = async (userModel, req, res) => {
     return res.status(403).json({
       success: false,
       result: null,
-      message: "Invalid credentials.",
+      message: 'Invalid credentials.'
     });
 
   // if (!user.phoneIsVerified) {
@@ -69,12 +69,12 @@ const login = async (userModel, req, res) => {
   const token = jwt.sign(
     {
       id: user._id,
-      name: user.name,
+      name: user.name
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: req.body.remember ? "365d" : "1h",
-      algorithm: "HS256",
+      expiresIn: req.body.remember ? '365d' : '1h',
+      algorithm: 'HS256'
     }
   );
 
@@ -94,9 +94,9 @@ const login = async (userModel, req, res) => {
       role: user.role,
       email: user.email,
       photo: user.photo,
-      token: token,
+      token: token
     },
-    message: "Successfully login user",
+    message: 'Successfully login user'
   });
 };
 

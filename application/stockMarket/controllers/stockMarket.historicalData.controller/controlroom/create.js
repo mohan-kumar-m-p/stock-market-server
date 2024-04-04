@@ -1,4 +1,4 @@
-const { getSearchAlphavantage, getOHLCVAlphavantage } = require('../../../middlewares/common.functions');
+const { getOHLCVAlphavantage } = require('../../../middlewares/common.functions');
 const { CRUD } = require('../../../models/crud.model');
 
 const create = async (req, res, historicalDataModel, stockCompanyModel) => {
@@ -16,20 +16,27 @@ const create = async (req, res, historicalDataModel, stockCompanyModel) => {
       message: 'Company symbol not found'
     });
   }
+  let year = exists[0]?.lastRefreshed?.substring(0, 4);
+  let m = exists[0]?.lastRefreshed?.substring(5);
+  let month = '';
+  if (!isNaN(m) && parseInt(m) >= 12){
+    year = year?.substring(0, 3) + (parseInt(year?.substring(3, 4)) + 1);
+    month = year + '-' + 1;
+  } else {
+    month = year + '-' + (parseInt(m) + 1);
+  }
   // get the OHLCV data from free API.
-  const ohlcvData = await getOHLCVAlphavantage(symbol, companyId);
+  const ohlcvData = await getOHLCVAlphavantage(symbol, month, companyId, userId);
 
-  if (!ohlcvData || !ohlcvData?.data || Object.keys(ohlcvData?.data)?.length <= 0 || ohlcvData?.status === 401) {
+  if (ohlcvData?.status === 401 || !ohlcvData || !Array.isArray(ohlcvData?.data) || ohlcvData?.data?.length <= 0 ) {
     return res.status(401).json({
       success: false,
       message: 'OHLCV data is upto date.'
     });
   }
 
-  const resBody = Object.assign({}, ohlcvData?.data);
-  resBody.createdBy = userId;
-  console.log('ohlcvData --', ohlcvData);
-  console.log('resBody --', resBody);
+  const resBody = ohlcvData?.data;
+
   //Create the stock market OHLCV document
   const result = await CRUD.insertMany(historicalDataModel, resBody);
 
@@ -38,6 +45,8 @@ const create = async (req, res, historicalDataModel, stockCompanyModel) => {
     result: { data: result },
     message: 'Stock market OHLCV data created successfully'
   });
+
+  await CRUD.updateOne (stockCompanyModel, { symbol: symbol }, { lastRefreshed:ohlcvData?.lastRefreshed });
 
   return;
 };

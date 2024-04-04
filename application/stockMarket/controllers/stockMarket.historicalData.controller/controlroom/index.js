@@ -7,8 +7,8 @@ const createStockOHLCVCtrl = (historicalDataModel, stockCompanyModel) => {
   const stockOHLCVCtrl = {};
 
   stockOHLCVCtrl.create = (req, res) => create(req, res, historicalDataModel, stockCompanyModel);
-  stockOHLCVCtrl.list = (req, res) => list(req, res, historicalDataModel, stockCompanyModel);
-  stockOHLCVCtrl.getOne = (req, res) => getOne(req, res, historicalDataModel, stockCompanyModel);
+  stockOHLCVCtrl.list = (req, res) => list(req, res, historicalDataModel);
+  stockOHLCVCtrl.getOne = (req, res) => getOne(req, res, historicalDataModel);
 
   return stockOHLCVCtrl;
 };
