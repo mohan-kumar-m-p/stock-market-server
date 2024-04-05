@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { userModel } = require('../models/helpers/user.crud.definition');
+const { userModel } = require('../application/users/models/helpers/user.crud.definition');
 
 //It is to validate the token, whether the users contain valid token or not
 const isValidAuthToken = async (req, res, next) => {
@@ -7,7 +7,7 @@ const isValidAuthToken = async (req, res, next) => {
     const authHeader = req.headers.authorization.split(' ');
     const token = authHeader[1];
 
-    if (!token || authHeader[0] !== 'BookingRoom')
+    if (!token || authHeader[0] !== 'JWT')
       return res.status(401).json({
         success: false,
         result: null,
@@ -15,7 +15,8 @@ const isValidAuthToken = async (req, res, next) => {
         jwtExpired: true
       });
 
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    const verified = jwt.verify(JSON.parse(token), process.env.JWT_SECRET);
+    console.log('verified', verified);
     if (!verified)
       return res.status(401).json({
         success: false,
@@ -37,22 +38,10 @@ const isValidAuthToken = async (req, res, next) => {
         jwtExpired: true
       });
 
-    const userToken = user.token;
+    req.user = user;
+    next();
 
-    if (!userToken.includes(token))
-      return res.status(401).json({
-        success: false,
-        result: null,
-        message: 'User is already logout try to login, authorization denied.',
-        jwtExpired: true
-      });
-    else {
-      const reqUserName = user?.name?.toLowerCase();
-      req.user = user;
-      next();
-    }
   } catch (error) {
-    error.expiredAt = new Date(error.expiredAt.getTime() + 5.5 * 3600 * 1000);
     return res.status(503).json({
       success: false,
       result: null,

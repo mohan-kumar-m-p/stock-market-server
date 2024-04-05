@@ -52,7 +52,7 @@ const login = async (userModel, req, res) => {
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: req.body.remember ? '365d' : '1h',
+      expiresIn: req.body.remember ? '365d' : '6h',
       algorithm: 'HS256'
     }
   );

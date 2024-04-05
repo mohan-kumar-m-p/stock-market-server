@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-// const isValidAuthToken = require('./handlers/validateToken');
+const isValidAuthToken = require('./handlers/validateToken');
 const cookieParser = require('cookie-parser');
 
 // allow cross-origin resource sharing
@@ -18,7 +18,7 @@ const userRouter = require('./application/users/routers/user.routers');
 // sets application API's routes starts here
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1', userRouter);
-app.use('/api/v1', stockMarketRouter);
+app.use('/api/v1', isValidAuthToken, stockMarketRouter);
 // routes end here
 
 module.exports = app;
