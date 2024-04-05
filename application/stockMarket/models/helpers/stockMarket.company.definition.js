@@ -47,6 +47,7 @@ const definition = {
   isActive: { type: Boolean, default: true },
   uniqueHashRef: { type: String },
   uniqueHash: { type: String, unique: true }, // combination of companyName
+  createdAt:{ type:Date, default:new Date() },
   createdBy: { type: String, required: true },
   modifiedBy: { type: String }
   //=== === === general fields ends here ========================================
@@ -68,11 +69,12 @@ async function genRefCode (next) {
     const prevRef = prevObject.refCode;
     // extracting the number part of refcode
     const numberStr = prevRef.substring(3);
+    let num = Number(numberStr);
     // by converting refcode to number and adding one
-    refCode = `SMC${Number(numberStr) + 1}`;
+    refCode = `SMC${(++num)}`;
   } else {
   // if it is first document the previous document will not be there so we store directly
-    refCode = 'SMC' + 100000;
+    refCode = 'SMC' + 110001;
   }
   // assigning refCode value
   this.refCode = refCode;

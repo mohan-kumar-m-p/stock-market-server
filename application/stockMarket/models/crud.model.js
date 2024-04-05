@@ -59,7 +59,7 @@ class CRUD {
 
   static async find (model, query) {
     const offset = query?.offset || 0;
-    const limit = query?.pageSize || 10;
+    const limit = query?.limit || 10;
     const filter = query?.filter || {};
     const select = query?.select || {};
     const sort = query?.sort || {};

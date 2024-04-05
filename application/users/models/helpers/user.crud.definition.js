@@ -1,100 +1,100 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const definition = {
   id: {
     type: String,
-    unique: true,
+    unique: true
   },
   refCode:{ type:String, unique:true },
   name: {
     type: String,
-    required: true,
+    required: true
   },
   email: {
     type: String,
-    required: [true, "Email address is required"],
+    required: [true, 'Email address is required'],
     unique: true,
     lowercase: true,
     validate: {
       validator: function (v) {
         return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i.test(v);
       },
-      message: (props) => `${props.value} is not a valid email address!`,
-    },
+      message: (props) => `${props.value} is not a valid email address!`
+    }
   },
   emailIsVerified: {
     type: Boolean,
-    default: false,
+    default: false
   },
   emailVerifiedAt: {
     type: String,
-    default: null,
+    default: null
   },
   password: {
     type: String,
-    default: null,
+    default: null
   },
   photo: {
     type: String,
-    default: null,
+    default: null
   },
   phone: {
     type: String,
-    required: [true, "Phone number is required"],
+    required: [true, 'Phone number is required'],
     validate: {
       validator: function (v) {
         return /^\d{10}$/.test(v);
       },
-      message: (props) => `${props.value} is not a valid phone number address!`,
-    },
+      message: (props) => `${props.value} is not a valid phone number address!`
+    }
   },
   phoneIsVerified: {
     type: Boolean,
-    default: false,
+    default: false
   },
   phoneVerifiedAt: {
     type: String,
-    default: null,
+    default: null
   },
   address: {
     type: String,
-    required: true,
+    required: true
   },
   role: {
     type: String,
     enum: {
-      values: ["user", "admin", "employee"],
-      message: "{VALUE} is not a valid role",
+      values: ['user', 'admin', 'employee'],
+      message: '{VALUE} is not a valid role'
     },
-    default: "user",
-    required: true,
+    default: 'user',
+    required: true
   },
   isActive: {
     type: Boolean,
-    default: true,
+    default: true
   },
   token: {
     type: String,
-    default: null,
+    default: null
   },
   loggedSessions: [
     {
       type: String,
-      default: null,
-    },
+      default: null
+    }
   ],
   isDeleted: {
     type: Boolean,
-    default: false,
-  },
+    default: false
+  }
 };
 
 const userSchema = mongoose.Schema(definition, { timestamps: true });
 
-userSchema.pre("save", function () {
+userSchema.pre('save', function () {
   this.id = this._id;
 });
 
-const userModel = mongoose.model("users", userSchema);
+const userModel = mongoose.model('users', userSchema);
 
 module.exports = { userModel };

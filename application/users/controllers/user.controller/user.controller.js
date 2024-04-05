@@ -1,5 +1,5 @@
-const { userModel } = require("../../models/helpers/user.crud.definition.js");
-const createUserController = require("./middlewares/index.js");
+const { userModel } = require('../../models/helpers/user.crud.definition.js');
+const createUserController = require('./controlroom/index.js');
 
 const userController = createUserController(userModel);
 

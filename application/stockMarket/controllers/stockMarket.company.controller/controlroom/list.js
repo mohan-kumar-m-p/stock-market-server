@@ -23,7 +23,6 @@ const list = async (req, res, stockCompanyModel) => {
   const sort = prepareSort(query);
   // preparing select objects to get only selected feilds data
   const select = prepareSelect(query);
-
   // fetch the stock market companies list.
   const result = await CRUD.find(stockCompanyModel, { filter, select, sort, offset, limit });
 

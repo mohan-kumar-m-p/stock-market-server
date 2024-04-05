@@ -4,7 +4,8 @@ const { CRUD } = require('../../../models/crud.model');
 const create = async (req, res, stockCompanyModel) => {
   const userId = req?.user?.id ?? 'System';
   const data = req.body;
-
+  // to avoid search data concurrency
+  await doSleep();
   //before creating stock market company check whether the company name already exists.
   const exists = await CRUD.find(stockCompanyModel, { filter: { symbol: data?.symbol } });
 
@@ -40,4 +41,8 @@ const create = async (req, res, stockCompanyModel) => {
   return;
 };
 
+function doSleep (){
+  const randomMilliseconds = Math.floor(Math.random() * 3001) + 1000;
+  return new Promise(resolve => setTimeout(resolve, randomMilliseconds));
+}
 module.exports = create;

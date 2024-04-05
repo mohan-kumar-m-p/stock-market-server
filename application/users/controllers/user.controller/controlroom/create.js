@@ -1,17 +1,32 @@
-const { generate: uniqueId } = require("shortid");
-const { CRUD } = require("../../../models/crud.model");
+const { CRUD } = require('../../../models/crud.model');
 const bcrypt = require('bcryptjs');
 
 const create = async (userModel, req, res) => {
-  // const User = mongoose.model(userModel);
-  // const UserPassword = mongoose.model(userModel + 'Password');
+
+  const user = await CRUD.find(userModel, { });
+
+  if (!user || (user && user?.length <= 0)){
+    req.body = {
+      refCode: 'STF10001',
+      name: 'Jackson',
+      email: 'admin@email.com',
+      emailIsVerified: true,
+      emailVerifiedAt: new Date(),
+      password: 'Admin@123',
+      phone: 1111111111,
+      phoneIsVerified: true,
+      phoneVerifiedAt: new Date(),
+      address: 'Mysore',
+      role: 'admin'
+    };
+  }
 
   let { email, password } = req.body;
   if (!email || !password)
     return res.status(400).json({
       success: false,
       result: null,
-      message: "Email or password fields they don't have been entered.",
+      message: 'Email or password fields they don\'t have been entered.'
     });
 
   const existingUser = await CRUD.findOne(userModel, { email: email });
@@ -20,14 +35,14 @@ const create = async (userModel, req, res) => {
     return res.status(400).json({
       success: false,
       result: null,
-      message: "An account with this email already exists.",
+      message: 'An account with this email already exists.'
     });
 
   if (password.length < 8)
     return res.status(400).json({
       success: false,
       result: null,
-      message: "The password needs to be at least 8 characters long.",
+      message: 'The password needs to be at least 8 characters long.'
     });
 
   const salt = await bcrypt.genSalt(8);
@@ -42,7 +57,7 @@ const create = async (userModel, req, res) => {
     return res.status(403).json({
       success: false,
       result: null,
-      message: "document couldn't save correctly",
+      message: 'document couldn\'t save correctly'
     });
   }
 
@@ -54,9 +69,9 @@ const create = async (userModel, req, res) => {
       name: result.name,
       surname: result.surname,
       //photo: result.photo,
-      role: result.role,
+      role: result.role
     },
-    message: "User document save correctly",
+    message: 'User document save correctly'
   });
 };
 

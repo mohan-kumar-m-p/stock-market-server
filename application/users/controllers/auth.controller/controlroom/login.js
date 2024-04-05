@@ -1,30 +1,19 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
-//const sendMail = require('./sendMail');
 const { CRUD } = require('../../../models/crud.model');
 
-// Custom validator for phone numbers
-function isValidPhoneNumber (value, helpers) {
-  if (!/^\d{10}$/.test(value)) {
-    return helpers.error('any.invalid');
-  }
-  return value;
-}
-
-// Joi schema with custom phone number validation
+// Joi schema validation
 const objectSchema = Joi.object({
-  phone: Joi.string()
-    .required()
-    .custom(isValidPhoneNumber, 'custom phone validation'),
+  email: Joi.string()
+    .required('Email required'),
   password: Joi.string().required()
 });
 
 const login = async (userModel, req, res) => {
-  //console.log("(((((())))))", userModel, req.body);
-  const { username: phone, password } = req.body;
+  const { username: email, password } = req.body;
 
-  const { error, value } = objectSchema.validate({ phone, password });
+  const { error, value } = objectSchema.validate({ email, password });
   if (error) {
     return res.status(409).json({
       success: false,
@@ -36,7 +25,7 @@ const login = async (userModel, req, res) => {
   }
 
   const user = await CRUD.findOne(userModel, {
-    phone: phone,
+    email: email,
     isDeleted: false
   });
 
@@ -44,7 +33,7 @@ const login = async (userModel, req, res) => {
     return res.status(404).json({
       success: false,
       result: null,
-      message: 'No account with this phone number has been registered.'
+      message: 'No account with this email has been registered.'
     });
 
   const isMatch = await bcrypt.compare(password, user.password);
@@ -55,16 +44,6 @@ const login = async (userModel, req, res) => {
       result: null,
       message: 'Invalid credentials.'
     });
-
-  // if (!user.phoneIsVerified) {
-  //   const appEmail = "";
-  //   await sendMail({ email: user.email, name: user.name });
-  //   return res.status(403).json({
-  //     success: false,
-  //     result: null,
-  //     message: "your email account is not verified , check your email inbox",
-  //   });
-  // }
 
   const token = jwt.sign(
     {
@@ -93,7 +72,6 @@ const login = async (userModel, req, res) => {
       surname: user.surname,
       role: user.role,
       email: user.email,
-      photo: user.photo,
       token: token
     },
     message: 'Successfully login user'
